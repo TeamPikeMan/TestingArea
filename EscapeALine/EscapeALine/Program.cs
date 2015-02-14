@@ -9,13 +9,13 @@ using System.Threading;
 
 namespace EscapeAlinesTest
 {
-    class Alines
+    class Aliens
     {
         public int x;
         public int y;
         public string Name = "";
 
-        public Alines(int xpos, int ypos, string name)
+        public Aliens(int xpos, int ypos, string name)
         {
             x = xpos;
             y = ypos;
@@ -31,6 +31,7 @@ namespace EscapeAlinesTest
         {
             grid[x, y] = 0;
         }
+
         public void Move(int xnew, int ynew, int[,] grid)
         {
             this.RemoveFromGrid(grid);
@@ -42,9 +43,6 @@ namespace EscapeAlinesTest
             this.placeInGrid(grid);
 
             Console.WriteLine(Program.printGrid(grid));
-
-
-
         }
 
 
@@ -112,11 +110,13 @@ namespace EscapeAlinesTest
     {
         public int x;
         public int y;
+        public int heroMoves;
 
         public Hero(int xpos, int ypos)
         {
             x = xpos;
             y = ypos;
+            heroMoves = 3;
         }
 
         public void placeInGrid(int[,] grid)
@@ -139,9 +139,17 @@ namespace EscapeAlinesTest
             this.placeInGrid(grid);
 
             Console.WriteLine(Program.printGrid(grid));
+        }
 
+        public Aliens NewAlien()
+        {
+            Aliens tempAlien = new Aliens(0, 0, "Pesho");
+            return tempAlien;
+        }
 
-
+        public void HeroUpgrade(int potency)
+        {
+            heroMoves += potency;
         }
     }
 
@@ -163,6 +171,36 @@ namespace EscapeAlinesTest
 
     }
 
+    class Upgrade
+    {
+        public int x;
+        public int y;
+        public int potency;
+
+        public Upgrade(int valueX, int valueY)
+        {
+            x = valueX;
+            y = valueY;
+            Random rnd = new Random();
+            potency = rnd.Next(0, 3);
+        }
+
+        public void PlaceInGrid(int[,] grid)
+        {
+            grid[x, y] = 4;
+        }
+
+        public void HeroUpgradePickup(Hero A, int[,] grid)
+        {
+            if (this.x == A.x && this.y == A.y)
+            {
+                grid[x, y] = 2;
+                A.HeroUpgrade(this.potency);
+            }
+        }
+
+
+    }
 
     class Program
     {
@@ -174,17 +212,17 @@ namespace EscapeAlinesTest
             Array.Clear(matrix, 0, matrix.Length);
 
 
-            List<Alines> All = new List<Alines>();
+            List<Aliens> All = new List<Aliens>();
             List<Rock> allRocks = new List<Rock>();
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\ArgiDUX\Desktop\DataBase.txt");
+            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Ivko_N76\Desktop\DataBase.txt");
 
             foreach (string value in lines)
             {
                 string[] temp = value.Split(',');
-                All.Add(new Alines(int.Parse(temp[0]), int.Parse(temp[1]), temp[2]));
+                All.Add(new Aliens(int.Parse(temp[0]), int.Parse(temp[1]), temp[2]));
             }
 
-            string[] lines1 = System.IO.File.ReadAllLines(@"C:\Users\ArgiDUX\Desktop\Rocks.txt");
+            string[] lines1 = System.IO.File.ReadAllLines(@"C:\Users\Ivko_N76\Desktop\Rocks.txt");
 
             foreach (string value in lines1)
             {
@@ -196,8 +234,10 @@ namespace EscapeAlinesTest
 
             Hero c = new Hero(10, 15);
             c.placeInGrid(matrix);
+            Upgrade up = new Upgrade(10, 16);
+            up.PlaceInGrid(matrix);
 
-            foreach (Alines value in All)
+            foreach (Aliens value in All)
             {
                 value.placeInGrid(matrix);
             }
@@ -210,30 +250,50 @@ namespace EscapeAlinesTest
             Console.WriteLine(printGrid(matrix));
             while (count < 20)
             {
-                int heromove = 3;
+                int heromove = c.heroMoves;
+
                 for (int i = 0; i < heromove; i++)
                 {
                     Console.SetCursorPosition(50, 10);
-                    Console.WriteLine("Moves:{0}/3", i + 1);
+                    Console.WriteLine("Moves:{0}/{1}", i + 1, heromove);
+
                     ConsoleKeyInfo userInput = Console.ReadKey();
+
                     if (userInput.Key == ConsoleKey.LeftArrow && c.y >= 1)
                     {
                         c.Move(0, -1, matrix);
+                        up.HeroUpgradePickup(c, matrix);
+
                     }
                     if (userInput.Key == ConsoleKey.RightArrow && c.y <= Console.BufferWidth - 1)
                     {
                         c.Move(0, 1, matrix);
+                        up.HeroUpgradePickup(c, matrix);
                     }
                     if (userInput.Key == ConsoleKey.UpArrow && c.x >= 1)
                     {
                         c.Move(-1, 0, matrix);
+                        up.HeroUpgradePickup(c, matrix);
                     }
                     if (userInput.Key == ConsoleKey.DownArrow && c.x < Console.BufferHeight - 1)
                     {
                         c.Move(1, 0, matrix);
+                        up.HeroUpgradePickup(c, matrix);
                     }
+                    if (userInput.Key == ConsoleKey.Spacebar)
+                    {
+                        c.Move(0, 0, matrix);                        
+                    }
+                    if (userInput.Key == ConsoleKey.Z && matrix[0,0] == 0 )
+                    {
+                        Aliens newAlien = c.NewAlien();
+                        newAlien.placeInGrid(matrix);
+                        All.Add(newAlien);
+                        Console.WriteLine(printGrid(matrix));
+                    }
+
                 }
-                foreach (Alines value in All)
+                foreach (Aliens value in All)
                 {
                     value.zombieMove(c, matrix);
                     if (value.Lose(c) == 1)
@@ -244,6 +304,12 @@ namespace EscapeAlinesTest
                 }
                 count++;
             }
+            if (count > 20)
+            {
+                Console.Clear();
+                Console.WriteLine("You have escape");
+            }
+
 
 
 
@@ -254,8 +320,7 @@ namespace EscapeAlinesTest
         {
             Console.SetCursorPosition(0, 0);
             string result = string.Empty;
-            //result += " 0123456789";
-            result += System.Environment.NewLine;
+           
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 //result += i.ToString();
@@ -274,6 +339,9 @@ namespace EscapeAlinesTest
                             break;
                         case 3:
                             result += "@";
+                            break;
+                        case 4:
+                            result += "+";
                             break;
                         default:
                             break;
