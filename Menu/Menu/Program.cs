@@ -21,38 +21,39 @@ namespace Menu
                 if (userInput.Key == ConsoleKey.UpArrow && select>=1)
                 {
                     select--;
-                }
+                }//move up selection
                 if (userInput.Key == ConsoleKey.DownArrow && select<=menuText.Length-2)
                 {
                     select++;
-                }
+                } //move down selection
                 if (userInput.Key == ConsoleKey.Enter)
                 {
-                    break;
-                }
+                    break; //stop selection process
+                } //user input
               
 
-                printMenu(select, menuText);
-
-
+                printMenu(select, menuText); //custom print method
             }
+
+
+            //Add switch to call other functions
 
         }
 
         static public void printMenu(int s, string[] menu)
         {
-            Console.Clear();
-            var total = 40;
+            Console.Clear(); //refresh screen
+            var total = 40; //should be console width in final version
 
-            for (int i = 0; i < menu.Length; i++)
+            for (int i = 0; i < menu.Length; i++) //printing cycle
             {
-                if(i==s)
+                if(i==s) //set color for the selected option
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.Yellow; //set color
                     Console.WriteLine(menu[i].PadLeft(((total - menu[i].Length) / 2)
                                             + menu[i].Length)
-                                   .PadRight(total));
-                    Console.ForegroundColor = ConsoleColor.White;
+                                   .PadRight(total));  //centering text
+                    Console.ForegroundColor = ConsoleColor.White;//reset color
                 }
                 else
                 {
