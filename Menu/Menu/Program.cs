@@ -35,7 +35,7 @@ namespace Menu
                 printMenu(select, menuText); //custom print method
             }
 
-
+            
             //Add switch to call other functions
 
         }
@@ -44,21 +44,22 @@ namespace Menu
         {
             Console.Clear(); //refresh screen
             var total = 40; //should be console width in final version
-
+            Console.CursorVisible = false;
             for (int i = 0; i < menu.Length; i++) //printing cycle
             {
+                int n = menu[i].Length % 2 == 0 ? 1 : 0; //take care of even lenght situation
                 if(i==s) //set color for the selected option
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow; //set color
-                    Console.WriteLine(menu[i].PadLeft(((total - menu[i].Length) / 2)
-                                            + menu[i].Length)
+                    Console.WriteLine(("+  "+menu[i]).PadLeft(((total - menu[i].Length) / 2)
+                                            + menu[i].Length-n)
                                    .PadRight(total));  //centering text
                     Console.ForegroundColor = ConsoleColor.White;//reset color
                 }
                 else
                 {
                     Console.WriteLine(menu[i].PadLeft(((total - menu[i].Length) / 2)
-                                            + menu[i].Length)
+                                            + menu[i].Length-n)
                                    .PadRight(total));
                 }
 
