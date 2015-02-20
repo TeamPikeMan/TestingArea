@@ -32,7 +32,7 @@ Menu and Opening/Closing Credits:
 		Lose Screen
 
 
-Object Class
+Missle Class
 
 	Classes
 	Methods
@@ -43,7 +43,7 @@ Object Class
 	
 		Position data
 		direction
-		type (missle, or powerup)
+		type (missle)
 		
 	
 	Methods
@@ -54,8 +54,34 @@ Object Class
 	
 	Constructor
 		postion with direction and type
+		
+		
 
+Missle Class
 
+	Classes
+	Methods
+	
+	General Overview:
+	
+	Variables
+	
+		Position data
+		direction
+		type
+		effect
+		
+	
+	Methods
+		HitDetect
+		Print
+		2dMatrixPlacement
+		MoveTimeProgres
+	
+	Constructor
+		postion with direction and type
+		
+		
 Player Class
 
 	Classes
