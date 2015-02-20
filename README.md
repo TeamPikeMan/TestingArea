@@ -32,7 +32,7 @@ Menu and Opening/Closing Credits:
 		Lose Screen
 
 
-Missle Class
+Missle Class (taken)
 
 	Classes
 	Methods
@@ -57,7 +57,7 @@ Missle Class
 		
 		
 
-Missle Class
+Ugrade Class(taken)
 
 	Classes
 	Methods
@@ -82,7 +82,7 @@ Missle Class
 		postion with direction and type
 		
 		
-Player Class
+Player Class(taken)
 
 	Classes
 	Methods
@@ -108,7 +108,7 @@ Player Class
 		full lives
 
 
-Alien Class
+Alien Class(taken)
 
 	Classes
 	Methods
@@ -132,7 +132,7 @@ Alien Class
 	Constructor
 		postion, lives from variables
 
-Printing and Window Desing:
+Printing and Window Desing:(taken)
 
 	Required Knowledge
 		StringBuilders
@@ -167,7 +167,7 @@ Level Desing (Currently on hold)
 	
 	Rearange remaining elements in new pattern
 
-HighScore
+HighScore(taken)
 	
 	Aspects that will be required
 		Writing Files
