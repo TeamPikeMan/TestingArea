@@ -17,7 +17,7 @@ namespace GameVersion1
         {
             this.x = 20;
             this.y = 20;
-            this.lives = 100;
+            this.lives = 3;
             this.score = 0;
         }
 

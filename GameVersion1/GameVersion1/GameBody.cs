@@ -42,7 +42,56 @@ namespace GameVersion1
             Random rng = new Random();
             int[,] matrix = new int[h-2*tbBorder, w/2];
 
-            RunGame(swarm, missles, rng, matrix, tbBorder);
+            string[] menuText = { "Start", "Options", "HighScore", "Exit" };
+            
+            Selection:
+            int select = 0;
+            PrintMenu(select, menuText, w);
+
+            while (true)
+            {
+
+                ConsoleKeyInfo userInput = Console.ReadKey();
+                if (userInput.Key == ConsoleKey.UpArrow && select >= 1)
+                {
+                    select--;
+                }//move up selection
+                if (userInput.Key == ConsoleKey.DownArrow && select <= menuText.Length - 2)
+                {
+                    select++;
+                } //move down selection
+                if (userInput.Key == ConsoleKey.Enter)
+                {
+                    break; //stop selection process
+                } //user input
+
+
+                PrintMenu(select, menuText, w); //custom print method
+            }
+
+            switch(select)
+            {
+                case 0:
+                    ConsoleSetUp(w,h);
+                    DrawBackGround(h, w);
+                    RunGame(swarm, missles, rng, matrix, tbBorder);
+                    break;
+                case 1:
+                    Console.Clear();
+                    Console.WriteLine("Remains to be implemented");
+                    
+                    Console.ReadLine();
+                    goto Selection;
+                case 2:
+                    PrintHighScore();
+                    goto Selection;
+                case 3:
+                    return;
+                default:
+                    break;
+            }
+
+            //RunGame(swarm, missles, rng, matrix, tbBorder);
         }
 
         static public void RunGame(List<Alien> swarm, List<Projectile> missles, Random rng, int[,] matrix,int b)
@@ -53,6 +102,7 @@ namespace GameVersion1
                 string[] temp = txtFile[i].Split(',');
                 swarm.Add(new Alien(int.Parse(temp[0]), int.Parse(temp[1]), int.Parse(temp[2]), rng.Next(20, 250)));
             }
+            
 
             foreach (Alien ship in swarm)
             {
@@ -78,45 +128,8 @@ namespace GameVersion1
             Console.Clear();
             Console.WriteLine("Game Over");
             Console.WriteLine(player.score);
-            Console.WriteLine("Input your Name");
-            string playerName = Console.ReadLine();
-            Score current = new Score(playerName, player.score, DateTime.Now);
-            
-            string[] scores = System.IO.File.ReadAllLines("HighScore.txt");
 
-            List<Score> tempScore = new List<Score>();
-            
-            for (int i = 0; i < scores.Length; i++)
-			{
-			    string[] temp=scores[i].Split('-');
-                if (temp != null)
-                {
-                    tempScore.Add(new Score(temp[0], int.Parse(temp[1]), DateTime.Parse(temp[2])));
-                }
-			}
-               
-            
-            tempScore.Add(current);
-
-            tempScore.Sort((x1,x2) => x1.points.CompareTo(x1.points));
-
-            if(tempScore.Count==11)
-            {
-                tempScore.RemoveAt(10);
-            }
-            Console.Clear();
-            List<string> output=new List<string>();
-
-            foreach (var item in tempScore)
-	        {
-                output.Add(item.ToString());
-                Console.WriteLine(item.ToString());
-	        }
-
-            
-
-
-            System.IO.File.WriteAllLines("HighScore.txt", output.ToArray());
+            HighScore(player);
             
         }
 
@@ -284,6 +297,86 @@ namespace GameVersion1
 
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
+        }
+        
+        static public void HighScore(Hero player)
+        {
+            Console.WriteLine("Input your Name");
+            string playerName = Console.ReadLine();
+            Score current = new Score(playerName, player.score, DateTime.Now);
+
+            string[] scores = System.IO.File.ReadAllLines("HighScore.txt");
+
+            List<Score> tempScore = new List<Score>();
+
+            for (int i = 0; i < scores.Length; i++)
+            {
+                string[] temp = scores[i].Split('-');
+                if (temp != null)
+                {
+                    tempScore.Add(new Score(temp[0], int.Parse(temp[1]), DateTime.Parse(temp[2])));
+                }
+            }
+
+
+            tempScore.Add(current);
+
+            tempScore.Sort((x1, x2) => x1.points.CompareTo(x1.points));
+
+            if (tempScore.Count == 11)
+            {
+                tempScore.RemoveAt(10);
+            }
+            Console.Clear();
+            List<string> output = new List<string>();
+
+            foreach (var item in tempScore)
+            {
+                output.Add(item.ToString());
+                Console.WriteLine(item.ToString());
+            }
+
+            System.IO.File.WriteAllLines("HighScore.txt", output.ToArray());
+        }
+
+        static public void PrintMenu(int s, string[] menu, int w)
+        {
+            Console.Clear(); //refresh screen
+            var total = w; //should be console width in final version
+            Console.CursorVisible = false;
+            for (int i = 0; i < menu.Length; i++) //printing cycle
+            {
+                int n = menu[i].Length % 2 == 0 ? 1 : 0; //take care of even lenght situation
+                if (i == s) //set color for the selected option
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow; //set color
+                    Console.WriteLine((">  " + menu[i]).PadLeft(((total - menu[i].Length) / 2)
+                                            + menu[i].Length - n)
+                                   .PadRight(total));  //centering text
+                    Console.ForegroundColor = ConsoleColor.White;//reset color
+                }
+                else
+                {
+                    Console.WriteLine(menu[i].PadLeft(((total - menu[i].Length) / 2)
+                                            + menu[i].Length - n)
+                                   .PadRight(total));
+                }
+
+            }
+            // Console.WriteLine(s);
+        }
+
+        static public void PrintHighScore()
+        {
+            Console.Clear();
+            string[] scores = System.IO.File.ReadAllLines("HighScore.txt");
+
+            foreach (var item in scores)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.ReadLine();
         }
     }
 }
