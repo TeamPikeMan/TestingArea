@@ -187,7 +187,7 @@ namespace GameVersion1
         }
         static public string printGrid(int[,] grid)
         {
-            Console.SetCursorPosition(0, 2);
+            //Console.SetCursorPosition(0, 2);
 
             StringBuilder result = new StringBuilder();
             //StringBuilder[] lines= new StringBuilder[grid.GetLength(0)];
@@ -270,6 +270,11 @@ namespace GameVersion1
                 {
                     p.Add(h.Fire());
                 }
+            }
+
+            while (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo userInput = Console.ReadKey();
             }
         }
 
