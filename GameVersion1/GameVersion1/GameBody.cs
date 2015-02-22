@@ -39,6 +39,7 @@ namespace GameVersion1
 
             List<Alien> swarm = new List<Alien>();
             List<Projectile> missles = new List<Projectile>();
+            List<Upgrade> upgrades = new List<Upgrade>();
             Random rng = new Random();
             int[,] matrix = new int[h - 2 * tbBorder, w / 2];
 
@@ -74,7 +75,7 @@ namespace GameVersion1
                 case 0:
                     ConsoleSetUp(w, h);
                     DrawBackGround(h, w);
-                    RunGame(swarm, missles, rng, matrix, tbBorder);
+                    RunGame(swarm, missles, upgrades, rng, matrix, tbBorder);
                     break;
                 case 1:
                     Console.Clear();
@@ -94,7 +95,7 @@ namespace GameVersion1
             //RunGame(swarm, missles, rng, matrix, tbBorder);
         }
 
-        static public void RunGame(List<Alien> swarm, List<Projectile> missles, Random rng, int[,] matrix, int b)
+        static public void RunGame(List<Alien> swarm, List<Projectile> missles, List<Upgrade> upgrades, Random rng, int[,] matrix, int b)
         {
             string[] txtFile = System.IO.File.ReadAllLines("TextFile1.txt");
             for (int i = 0; i < txtFile.Length; i++)
@@ -114,9 +115,12 @@ namespace GameVersion1
             player.PlaceInGrid(matrix);
             while (true)
             {
-                int i = GameTurn(swarm, missles, player, matrix, b);
+                int i = GameTurn(swarm, missles, upgrades, player, matrix, b);
                 if (i == 0)
                 {
+                    //=============================================================================================> LOSE SCREEN
+                    LoseScreen(29, 80);
+                    //=============================================================================================> LOSE SCREEN
                     break;
                 }
                 if (swarm.Count == 0)
@@ -125,15 +129,15 @@ namespace GameVersion1
                 }
             }
 
-            Console.Clear();
-            Console.WriteLine("Game Over");
-            Console.WriteLine(player.score);
+            //Console.Clear();
+            //Console.WriteLine("Game Over");
+            //Console.WriteLine(player.score);
 
             HighScore(player);
 
         }
 
-        static public int GameTurn(List<Alien> s, List<Projectile> p, Hero h, int[,] grid, int b)
+        static public int GameTurn(List<Alien> s, List<Projectile> p, List<Upgrade> upgrades, Hero h, int[,] grid, int b)
         {
 
             string monitor = printGrid(grid);
@@ -144,19 +148,39 @@ namespace GameVersion1
             {
                 p.Add(ship.Fire());
                 ship.ProgressTime();
-
-
                 p.RemoveAll(o => o == null);
-                ship.Hit_Detect(p, grid, h);
-            }
+                upgrades.Add(ship.Hit_Detect(p, grid, h));
 
+            }
             p.RemoveAll(o => o == null);
+            upgrades.RemoveAll(o => o == null);
+            foreach (Upgrade alien in upgrades)
+            {
+                alien.PlaceInGrid(grid);
+                alien.MoveTimeProgress(grid);
+                alien.HeroCatch(h, grid);
+            }
+            upgrades.RemoveAll(o => o.type == 5);
+            foreach (Upgrade alien in upgrades)
+            {
+                if (alien.x == grid.GetLength(0) - 1 || alien.x == 0)
+                {
+                    alien.direction *= -1;
+                    if (alien.y == grid.GetLength(1) - 1 || alien.y == 0)
+                    {
+                        alien.secondDirection *= -1;
+                    }
+
+                }
+            }
 
             foreach (Projectile missle in p)
             {
                 missle.PlaceInGrid(grid);
             }
             // 
+
+
             foreach (Projectile missle in p)
             {
                 if (missle.x == grid.GetLength(0) - 1 || missle.x == 0)
@@ -222,6 +246,9 @@ namespace GameVersion1
                         case 3:
                             result.Append("+");
                             break;
+                        case 5:
+                            result.Append("*");
+                            break;
                         case 10:
                             result.Append("#");
                             break;
@@ -253,6 +280,18 @@ namespace GameVersion1
 
             Console.SetCursorPosition(lines[1].Length / 2 + lines[0].Length + 2, b + 12);
             Console.Write(h.score.ToString().PadLeft(5));
+
+            //=============================================================================================> INSTRUCTIONS
+            //Print game instructions below the playing field
+            Console.SetCursorPosition(lines[1].Length / 2, lines[1].Length / 2 + 6);
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("  ← → ↑ ↓ to move    spacebar to fire".ToString().PadRight(40));
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+
+            //Set cursor position within the playing field to clear score field bug
+            Console.SetCursorPosition(lines[1].Length / 2, lines[0].Length / 2 + 4);
+            //=============================================================================================> INSTRUCTIONS
         }
 
         static public void HeroMove(Hero h, int[,] grid, List<Projectile> p)
@@ -278,7 +317,7 @@ namespace GameVersion1
                 }
                 if (userInput.Key == ConsoleKey.Spacebar)
                 {
-                    
+
                     switch (h.powerUpLevel)
                     {
                         case 0:
@@ -334,7 +373,7 @@ namespace GameVersion1
 
         static public void HighScore(Hero player)
         {
-            Console.WriteLine("Input your Name");
+            Console.Write("Input your Name:  ");
             string playerName = Console.ReadLine();
             Score current = new Score(playerName, player.score, DateTime.Now);
 
@@ -411,5 +450,22 @@ namespace GameVersion1
 
             Console.ReadLine();
         }
+
+        //===============================================================================================> LOSE SCREEN
+        static public void LoseScreen(int h, int w)
+        {
+            Console.Clear();
+            string frame = new String('=', 20);
+            Console.SetCursorPosition(h, h / 3);
+            Console.WriteLine(frame);
+            Console.SetCursorPosition(h, h / 3 + 1);
+            Console.WriteLine("Game Over".ToString().PadLeft(h / 2));
+            Console.SetCursorPosition(h, h / 3 + 3);
+            Console.WriteLine("You lose!".ToString().PadLeft(h / 2));
+            Console.SetCursorPosition(h, h / 3 + 4);
+            Console.WriteLine(frame);
+            Console.SetCursorPosition(h, h / 3 + 8);
+        }
+        //===============================================================================================> LOSE SCREEN
     }
 }

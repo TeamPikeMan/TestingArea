@@ -34,20 +34,23 @@ namespace GameVersion1
             grid[x, y] = 0;
         }
 
-        public void Hit_Detect(List<Projectile> j, int[,] grid, Hero pl)
+        public Upgrade Hit_Detect(List<Projectile> j, int[,] grid, Hero pl)
         {
-            if (j.Exists(o => o.x == this.x && o.y == this.y && o.direction == -1)&& this.lives>0)
+            if (j.Exists(o => o.x == this.x && o.y == this.y && o.direction == -1) && this.lives > 0)
             {
                 lives--;
-                if(lives==0)
+                if (lives == 0)
                 {
                     this.RemoveFromGrid(grid);
                     pl.score += 100;
+                    return new Upgrade(this.x, this.y, 1, 1, 0);
+
                 }
                 int index = j.FindIndex(o => o.x == this.x && o.y == this.y);
                 j[index].RemoveFromGrid(grid);
                 j.RemoveAt(index);
             }
+            return null;
         }
 
         public Projectile Fire()
