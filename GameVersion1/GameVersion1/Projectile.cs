@@ -11,6 +11,7 @@ namespace GameVersion1
         public int x;
         public int y;
         public int direction;
+        public int direction2;
 
         public Projectile()
         {
@@ -19,11 +20,13 @@ namespace GameVersion1
             direction = 1;
         }
 
-        public Projectile(int xpos, int ypos, int d)
+        public Projectile(int xpos, int ypos, int d, int d2=0)
         {
             x=xpos;
             y=ypos;
             direction = d;
+            direction2 = d2;
+
         }
 
         public void PlaceInGrid(int[,] grid)
@@ -34,7 +37,6 @@ namespace GameVersion1
                     grid[x, y] = 2;
                 else
                     grid[x, y] = 3;
-                
             }
         }
 
@@ -51,7 +53,8 @@ namespace GameVersion1
             this.RemoveFromGrid(grid);
 
             x = this.x + this.direction;
-
+            y = this.y + this.direction2;
+   
             this.PlaceInGrid(grid);
         }
     }

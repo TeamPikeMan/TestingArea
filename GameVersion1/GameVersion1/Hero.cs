@@ -12,6 +12,7 @@ namespace GameVersion1
         public int y;
         public int lives;
         public int score;
+        public int powerUpLevel;
 
         public Hero()
         {
@@ -19,7 +20,19 @@ namespace GameVersion1
             this.y = 20;
             this.lives = 3;
             this.score = 0;
+            this.powerUpLevel = 0;
         }
+
+        public void LevelUp() 
+        {
+            powerUpLevel++;
+        }
+
+        public void LifeUp()
+        {
+            lives++;
+        }
+
 
         public void PlaceInGrid(int[,] grid)
         {
@@ -41,9 +54,9 @@ namespace GameVersion1
             this.PlaceInGrid(grid);
         }
 
-        public Projectile Fire()
+        public Projectile Fire(int i)
         {
-            return new Projectile(x-1, y, -1);
+            return new Projectile(x-1, y, -1, i);
         }
 
         public void Hit(List<Projectile> j, int[,] grid)
