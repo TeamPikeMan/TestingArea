@@ -192,3 +192,5 @@ HighScore(taken)
 		This should be a method, so it can be easyly included in the Main Program
 		Preferably use strings or stringbuilder to write to file
 		No return, void method
+		
+		TEST-CHANGE
